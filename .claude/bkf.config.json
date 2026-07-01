@@ -7,6 +7,13 @@
       "id": "1CU9qrompJXsepKucr9s5jAbmvIA9DYwa",
       "url": "https://drive.google.com/drive/folders/1CU9qrompJXsepKucr9s5jAbmvIA9DYwa"
     },
+    "ledger": {
+      "name": "BKF Ledger",
+      "type": "google-sheet",
+      "id": "1WUTNrnAONFBjp-6Igu6eHJXcLWMi-pzri3-ja2pV6tE",
+      "url": "https://docs.google.com/spreadsheets/d/1WUTNrnAONFBjp-6Igu6eHJXcLWMi-pzri3-ja2pV6tE/edit",
+      "columns": ["Fixture", "Date", "Pre-Match Scenario", "Confidence", "Result", "Spoiler", "Lesson Learned"]
+    },
     "folders": {
       "fixtures": {
         "id": "1n1vfCDRG7pQJ6IftjLvWwi4Z_hFWiHR1",

@@ -123,13 +123,19 @@ All BKF artifacts live under the Google Drive folder **`live slip essay`**:
 
 ```
 live slip essay/
-├── fixtures/       # raw fixture inputs (teams, kickoff, competition, context)
-├── predictions/    # locked scenarios produced by /predict
-├── results/        # actual match outcomes (for later grading)
-└── calibration/    # prediction-vs-result tracking to measure model calibration
+├── BKF Ledger              # master spreadsheet (Google Sheet) — one row per fixture
+├── fixtures/               # pre-match scenario links + team news
+├── predictions/            # locked scenarios + /predict logs (JSON records)
+├── results/                # post-match result cards + calibration
+└── calibration/            # hit-rate tracking + pattern library
 ```
 
-Folder IDs are recorded in `.claude/bkf.config.json`.
+**BKF Ledger** columns (locked): `Fixture` · `Date` · `Pre-Match Scenario`
+(link to the `/predictions/` file) · `Confidence` · `Result` (Win/Loss/Void) ·
+`Spoiler` (what confirmed/broke it) · `Lesson Learned`.
+
+Folder and Ledger IDs are recorded in `.claude/bkf.config.json`. Log records are
+written by the agent identity **DIANA** (`logged_by`).
 
 ---
 

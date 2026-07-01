@@ -1,144 +1,101 @@
 ---
 name: predict
-description: >-
-  Produce a locked BKF pre-match scenario for a football fixture. Wraps the
-  football-fixture-prediction skill, enforces the locked Scenario Structure from
-  CLAUDE.md (independent read FIRST, market comparison AFTER), and writes a
-  structured log record to Google Drive on every execution. Use when the operator
-  asks to predict, read, or gate a fixture (e.g. "/predict England vs Congo").
+description: Run an independent pre-match football scenario analysis for a World Cup 2026 fixture. Takes a fixture name or link. Outputs a locked prediction with scenario, confidence, and market comparison. Logs the record to Google Drive.
+disable-model-invocation: false
+context: parent
 ---
 
 # /predict — BKF Locked Prediction Command
 
-This command is the **only** sanctioned way to produce a locked BKF prediction. It is
-governed by `CLAUDE.md` (the BKF constitution). Read and obey that file. This skill
-does not override it — it operationalizes it.
+Governed by `CLAUDE.md` (the BKF constitution). Obey it. This skill operationalizes the
+constitution — it does not override it. **Phase 1 scope:** produce, approve, and log a
+locked scenario. Do **not** compute stakes, place bets, generate posts, or trigger
+automation.
 
-**Phase 1 scope:** produce and log a locked scenario. Do **not** compute stakes, place
-bets, generate posts, or trigger automation.
-
----
-
-## Inputs
-
-The operator supplies a fixture, minimally:
-
-- **Home team** and **Away team**
-- **Competition** (league / tournament and stage)
-- **Kickoff** date/time
-- Optional **context** notes (team news, motivation, venue, etc.)
-
-If the home/away split is ambiguous (e.g. a neutral-venue final), ask which side is
-listed first; do not guess.
+Agent identity for logging: **DIANA**.
 
 ---
 
-## Procedure (STRICT ORDER)
+## When invoked
 
-### Step 1 — Independent analysis FIRST (no odds yet)
-Do **not** look at, mention, or reason from the market in this step. Build the read from
-football facts only. Produce the **locked Scenario Structure** exactly as specified in
-CLAUDE.md §2, all fields present and in order:
+1. **Get the fixture.** If the operator did not provide one, ask for the fixture — a name
+   (e.g. `Mexico vs England`) or a Sofascore / Betway link. If the home/away split is
+   ambiguous (neutral venue), confirm which side is listed first.
 
-1. **Baseline Strength** — form, squad quality, availability (structural).
-2. **Recent Form Quality** — quality of recent performances, not just results.
-3. **Tactical Matchup** — how the styles and shapes interact.
-4. **Availability** — injuries, suspensions, rotation, team news.
-5. **Context** — tournament stage, pressure, momentum, stakes.
-6. **Independent Probability Estimate** — outcome probabilities that sum to 100%
-   (e.g. `England 70% / Draw 15% / Congo 15%`).
-7. **Scenario** — the narrative of what most likely happens on the pitch.
-8. **Failure Path** — the concrete conditions under which the read is wrong.
-9. **Confidence Level** — 50%–100%.
+2. **Run the independent read.** Run the `football-fixture-prediction` skill
+   (**VISION V.X protocol**). Do the analysis from football facts **first** — do not look
+   at odds yet.
 
-If any field cannot be completed, the prediction is **invalid** — say so and stop. The
-fixture stays ungated.
+3. **Generate the scenario** in the locked structure from CLAUDE.md §2:
+   1. Baseline Strength
+   2. Recent Form Quality
+   3. Tactical Matchup
+   4. Availability
+   5. Context
+   6. Independent Probability Estimate (sums to 100%)
+   7. Scenario (narrative)
+   8. Failure Path
+   9. Confidence Level (50–100%)
 
-### Step 2 — Market comparison AFTER
-Only now consult the market. Compare the locked read to the odds:
+   Then run the **market comparison** (CLAUDE.md §3) — *after* the read — and record a
+   `verdict`: `Market aligns` / `Market contradicts` / `Market underprices`.
 
-- **Aligns with the facts →** confirm the read.
-- **Contradicts the facts →** flag the **edge** (the odds show the bet).
+4. **Show the full scenario in the chat** — numbered and clear, all nine fields plus the
+   market comparison. Run the safety pass (CLAUDE.md §4): strip any forbidden language,
+   keep the confidence + failure path, append the Safety Footer for customer-facing text.
 
-Record the market snapshot and the verdict (`confirm` | `edge`). Never let the market
-rewrite Step 1 — if new *football* information surfaces, that is a new read, not a market
-adjustment.
+5. **Ask:** `Approve this scenario and log to Drive? (yes/no)`
 
-### Step 3 — Safety pass
-Enforce CLAUDE.md §4 before anything is presented or logged:
+6. **If YES:** format the record as JSON (Level B+2 format below) with a timestamp and
+   write it to the `predictions/` folder in Drive
+   (`.claude/bkf.config.json` → `drive.folders.predictions.id`) via the Google Drive
+   `create_file` tool (`contentMimeType: application/json`,
+   `disableConversionToGoogleType: true`). Then add a row to the **BKF Ledger** sheet.
+   Return the Drive link.
 
-- Scan output for **forbidden language**; if any appears, rewrite to remove it.
-- Ensure the read is framed with a confidence level and a failure path.
-- If the output is customer-facing, append the **Safety Footer** and confirm the content
-  scores **≥ 38/50** on the RCIS (CLAUDE.md §5), with the Safety Lock dimension present.
-
-### Step 4 — Log to Drive (EVERY execution)
-Write a structured log record to Drive on **every** `/predict` run — including invalid or
-aborted ones (log the reason). See the Logging section below.
+7. **If NO:** hold the scenario for revision. Do not log. (Optional: a `status: "held"`
+   record may be written for audit, but the ledger row is not added until approval.)
 
 ---
 
-## Logging Mechanism (writes to Google Drive)
-
-Every execution writes **one JSON log record** to the `predictions` folder in Drive
-(folder id in `.claude/bkf.config.json` → `drive.folders.predictions.id`), using the
-Google Drive `create_file` tool.
-
-- **Parent:** `drive.folders.predictions.id`
-- **Title:** `YYYY-MM-DD_<home>-vs-<away>_predict-log.json` (kickoff date, teams
-  slugified lowercase).
-- **contentMimeType:** `application/json`, with `disableConversionToGoogleType: true`.
-
-### Log record schema
+## Log Record Format (Level B+2)
 
 ```json
 {
-  "timestamp": "2026-07-01T18:40:00Z",
-  "command": "/predict",
-  "status": "locked | invalid",
-  "fixture": {
-    "home": "England",
-    "away": "Congo",
-    "competition": "Friendly",
-    "stage": "N/A",
-    "kickoff": "2026-07-05T19:00:00Z"
-  },
+  "fixture": "England vs DR Congo",
+  "date": "2026-07-01",
+  "kickoff": "18:00",
   "scenario": {
     "baseline_strength": "...",
-    "recent_form_quality": "...",
+    "recent_form": "...",
     "tactical_matchup": "...",
     "availability": "...",
     "context": "...",
-    "independent_probability_estimate": { "England": 70, "Draw": 15, "Congo": 15 },
-    "scenario": "...",
-    "failure_path": "...",
-    "confidence_level": 72
+    "probability_estimate": { "ENG": 0.70, "Draw": 0.15, "COD": 0.15 },
+    "narrative": "...",
+    "failure_path": "..."
   },
-  "market": {
-    "consulted": true,
-    "snapshot": "England 1.45 / Draw 4.20 / Congo 6.50",
-    "verdict": "confirm | edge",
-    "edge_note": "..."
+  "confidence": 65,
+  "market_comparison": {
+    "market_lean": { "ENG": 0.774, "Draw": 0.157, "COD": 0.069 },
+    "verdict": "Market aligns / Market contradicts / Market underprices"
   },
-  "safety": {
-    "forbidden_language_found": false,
-    "footer_applied": true,
-    "rcis_score": 41
+  "spoiler_line": "what spoiled it / what confirmed it",
+  "frozen_market_snapshot": {
+    "1x2": { "ENG": 1.31, "Draw": 4.50, "COD": 8.00 },
+    "timestamp": "2026-07-01T18:00:00Z"
   },
-  "gated": true
+  "logged_at": "ISO timestamp",
+  "logged_by": "DIANA"
 }
 ```
 
-Notes:
-- `gated` is `true` only when a complete, valid locked scenario was produced.
-- On an invalid run, set `status: "invalid"`, `gated: false`, and include a
-  `"reason"` field explaining what was missing; still write the log record.
-- After writing, report the Drive `viewUrl` of the log record back to the operator.
+### File naming
+`YYYY-MM-DD_<home>-vs-<away>_predict-log.json` (kickoff date; teams slugified lowercase).
 
----
-
-## Output to the operator
-
-1. The locked Scenario Structure (all 9 fields).
-2. The market verdict (`confirm` / `edge`) with a one-line justification.
-3. Confirmation that the log record was written, with its Drive link.
+### Notes
+- `probability_estimate` and `market_lean` are decimals that sum to ~1.0.
+- `frozen_market_snapshot.1x2` holds decimal odds captured at freeze time; always verify
+  odds manually before any decision (Safety Footer).
+- After writing, report the Drive `viewUrl` of the log record and the ledger row back to
+  the operator.
