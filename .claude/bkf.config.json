@@ -1,0 +1,34 @@
+{
+  "operation": "Before Kickoff Football (BKF)",
+  "phase": 1,
+  "drive": {
+    "root": {
+      "name": "live slip essay",
+      "id": "1CU9qrompJXsepKucr9s5jAbmvIA9DYwa",
+      "url": "https://drive.google.com/drive/folders/1CU9qrompJXsepKucr9s5jAbmvIA9DYwa"
+    },
+    "folders": {
+      "fixtures": {
+        "id": "1n1vfCDRG7pQJ6IftjLvWwi4Z_hFWiHR1",
+        "url": "https://drive.google.com/drive/folders/1n1vfCDRG7pQJ6IftjLvWwi4Z_hFWiHR1"
+      },
+      "predictions": {
+        "id": "1QmZFzH-AUiEzeWTJ5maa13LtZgFm0Kao",
+        "url": "https://drive.google.com/drive/folders/1QmZFzH-AUiEzeWTJ5maa13LtZgFm0Kao"
+      },
+      "results": {
+        "id": "1ox6b_foFiD9l5tCXvFAxtWIfqaCNGEOs",
+        "url": "https://drive.google.com/drive/folders/1ox6b_foFiD9l5tCXvFAxtWIfqaCNGEOs"
+      },
+      "calibration": {
+        "id": "1JbrRPWM4DHP3pqhUFYh3UqTjHbGgW__9",
+        "url": "https://drive.google.com/drive/folders/1JbrRPWM4DHP3pqhUFYh3UqTjHbGgW__9"
+      }
+    }
+  },
+  "log": {
+    "destination": "drive:predictions",
+    "record_format": "json",
+    "naming": "YYYY-MM-DD_home-vs-away_predict-log.json"
+  }
+}
