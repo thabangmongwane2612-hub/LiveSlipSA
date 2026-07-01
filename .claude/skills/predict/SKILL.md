@@ -48,7 +48,7 @@ Agent identity for logging: **DIANA**.
 
 6. **If YES:** format the record as JSON (Level B+2 format below) with a timestamp and
    write it to the `predictions/` folder in Drive
-   (`.claude/bkf.config.json` → `drive.folders.predictions.id`) via the Google Drive
+   (`.claude/bkf.config.json` → `drive_folders.predictions`) via the Google Drive
    `create_file` tool (`contentMimeType: application/json`,
    `disableConversionToGoogleType: true`). Then add a row to the **BKF Ledger** sheet.
    Return the Drive link.
