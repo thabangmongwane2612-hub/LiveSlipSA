@@ -1,0 +1,14 @@
+{
+  "fixture": "Mexico vs England",
+  "date": "2026-07-07",
+  "kickoff": "20:00",
+  "competition": "FIFA World Cup 2026 — Round of 16",
+  "venue": "Estadio Azteca, Mexico City",
+  "probability_estimate": { "MEX": 0.23, "Draw": 0.27, "ENG": 0.50 },
+  "confidence": 62,
+  "status": "locked",
+  "decision": "approved",
+  "gated": true,
+  "drive_log_url": "https://drive.google.com/file/d/1lT8eNi875JWmj_uqjdgWNFLCIOIPWmyR/view",
+  "logged_by": "DIANA"
+}

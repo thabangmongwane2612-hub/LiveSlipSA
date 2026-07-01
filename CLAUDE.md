@@ -5,8 +5,18 @@
 > scenario, and piece of content is produced. Rules here are **non-negotiable** unless
 > explicitly changed by the operator in a new locked version of this file.
 >
-> **Phase:** 1 (scaffold). Bankroll management, post generation, and automation are
-> **out of scope** and must not be built or invoked yet.
+> **Phase:** 2 (bankroll + livecheck + discipline hooks). Phase 1 (constitution,
+> `/predict`, Drive structure) is locked and proven. Phase 2 adds **personal bankroll
+> management**, the `/livecheck` live-market alignment checker, the `/ledger` display,
+> and **PreToolUse discipline gates** — all for the operator's OWN staking. Public
+> post generation, social content, scheduling/automation, and any public distribution
+> remain **out of scope** and must not be built or invoked yet.
+>
+> **Responsible-gambling posture (Phase 2):** the bankroll tooling exists to *enforce
+> discipline and reduce harm* — exposure caps, cold reads, hard blocks — never to
+> encourage staking. It manages a single operator account only. Stakes are the
+> operator's own decision; the engine never instructs a stake and caps exposure by
+> default.
 
 ---
 
@@ -139,10 +149,50 @@ written by the agent identity **DIANA** (`logged_by`).
 
 ---
 
-## 8. Scope Guard (Phase 1)
+## 8. Phase 2 — Bankroll, LiveCheck & Discipline Gates
 
-**In scope:** this constitution, the `/predict` command, the Drive folder structure,
-and the per-execution logging mechanism.
+Phase 2 turns live staking into **discipline-as-code** for the operator's own account.
 
-**Out of scope (do NOT build yet):** bankroll management, staking systems, automated
-posting, social content generation, scheduling/automation, and any public distribution.
+### 8.1 Bankroll Ledger (`bankroll.json`)
+Single source of truth for stakes and balance. Two synced copies:
+
+- **Canonical operational copy:** local `bankroll.json` at the repo root. The
+  PreToolUse gate reads and writes this deterministically (no network) and can hard-block.
+- **Visibility mirror:** `bankroll.json` at the root of Drive `live slip essay/`, written
+  by `/livecheck` after each approved stake so every session/human sees the current number.
+
+Balance model: `available = starting − total_exposure`. Currency: **ZAR**. Account:
+`thabangmongwane26.12@gmail.com`.
+
+### 8.2 `/livecheck`
+Cold read of a **live market** against the locked pre-match scenario. Reads the prediction
+from Drive `predictions/`, compares to the live odds, and returns
+`ALIGN` / `CONTRADICT` / `EDGE`. It never overrides the scenario — it verifies. On
+approval it logs a stake record to `bankroll.json` (local + Drive mirror).
+
+### 8.3 `/ledger`
+Read-only display of the current balance plus the last 5 stake records. Never mutates.
+
+### 8.4 PreToolUse Discipline Gates
+A local hook (`.claude/hooks/discipline_gate.py`) fires before tool execution:
+
+- **Exposure gate (enforced):** blocks any write to `bankroll.json` where
+  `new_stake + current_exposure` exceeds **30% of available balance**, unless explicitly
+  overridden. No single decision may quietly breach the cap.
+- **Approved-scenario gate (enforced tripwire):** blocks a post/publish write to Drive
+  unless an **approved** locked scenario exists for the fixture. Message:
+  *"No approved scenario for this fixture. Run `/predict` first, then approve."*
+
+The gate is deterministic and local; it fails **closed** (block) on doubt.
+
+---
+
+## 9. Scope Guard (Phase 2)
+
+**In scope:** everything in Phase 1, plus the bankroll ledger (`bankroll.json`),
+`/livecheck`, `/ledger`, and the PreToolUse discipline gates — all for the operator's
+single account.
+
+**Out of scope (do NOT build yet):** public post/content generation, social distribution,
+scheduling/automation, multi-account or customer staking, and anything that encourages
+(rather than disciplines) betting.
