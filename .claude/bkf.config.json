@@ -1,0 +1,36 @@
+{
+  "operation": "Before Kickoff Football (BKF)",
+  "phase": 1,
+  "drive_account": "gjs.intelligence.ops@gmail.com",
+  "drive_folders": {
+    "root": "1CU9qrompJXsepKucr9s5jAbmvIA9DYwa",
+    "fixtures": "1n1vfCDRG7pQJ6IftjLvWwi4Z_hFWiHR1",
+    "predictions": "1QmZFzH-AUiEzeWTJ5maa13LtZgFm0Kao",
+    "results": "1ox6b_foFiD9l5tCXvFAxtWIfqaCNGEOs",
+    "calibration": "1JbrRPWM4DHP3pqhUFYh3UqTjHbGgW__9"
+  },
+  "ledger": {
+    "name": "BKF Ledger",
+    "type": "google-sheet",
+    "id": "1WUTNrnAONFBjp-6Igu6eHJXcLWMi-pzri3-ja2pV6tE",
+    "url": "https://docs.google.com/spreadsheets/d/1WUTNrnAONFBjp-6Igu6eHJXcLWMi-pzri3-ja2pV6tE/edit",
+    "columns": ["Fixture", "Date", "Pre-Match Scenario", "Confidence", "Result", "Spoiler", "Lesson Learned"]
+  },
+  "bankroll": {
+    "canonical_local": "bankroll.json",
+    "drive_file_id": "1U7kX28zTWh3DC0raIiYFbUnK6dPN34ZO",
+    "drive_url": "https://drive.google.com/file/d/1U7kX28zTWh3DC0raIiYFbUnK6dPN34ZO/view",
+    "currency": "ZAR",
+    "starting_balance": 500,
+    "exposure_cap_pct": 30
+  },
+  "hooks": {
+    "pre_tool_use": ".claude/hooks/discipline_gate.py"
+  },
+  "log": {
+    "destination": "drive_folders.predictions",
+    "record_format": "json",
+    "naming": "YYYY-MM-DD_home-vs-away_predict-log.json",
+    "logged_by": "DIANA"
+  }
+}
